@@ -9,6 +9,7 @@ import ru.gb.java2.chat.clientserver.commands.PublicMessageCommandData;
 import java.io.*;
 import java.net.Socket;
 import java.util.Timer;
+import java.util.TimerTask;
 
 public class ClientHandler {
 
@@ -44,6 +45,22 @@ public class ClientHandler {
     }
 
     private void authentication() throws IOException {
+
+        Timer authTimer = new Timer();
+        TimerTask authTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                if (username == null) {
+                    try {
+                        closeConnection();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        authTimer.schedule(authTimerTask, 100);
+
         while (true) {
             Command command = readCommand();
             if (command == null) {
