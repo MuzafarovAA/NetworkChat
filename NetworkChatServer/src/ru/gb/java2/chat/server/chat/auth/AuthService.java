@@ -1,24 +1,49 @@
 package ru.gb.java2.chat.server.chat.auth;
 
+import java.sql.*;
 import java.util.Set;
 
 public class AuthService {
 
-    private static Set<User> USERS = Set.of(
-            new User("login1", "pass1", "username1"),
-            new User("login2", "pass2", "username2"),
-            new User("login3", "pass3", "username3")
-    );
+    public static final String JDBC_URL = "jdbc:sqlite:C:/Users/artmuz/Desktop/GeekBrains/Java2NetworkChat/userlist.db";
+    private Connection connection;
 
 
     public String getUsernameByLoginAndPassword(String login, String password) {
-        User requiredUser = new User(login, password);
-        for (User user : USERS) {
-            if (requiredUser.equals(user)) {
-                return user.getUsername();
+
+        String username = null;
+
+        try {
+            PreparedStatement statement = connection.prepareStatement("SELECT username FROM user WHERE login = ? AND password = ?");
+            statement.setString(1, login);
+            statement.setString(2, password);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet == null) {
+                return null;
             }
+            username = resultSet.getString("username");
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
 
-        return null;
+        return username;
+    }
+
+    public void connect() {
+        try {
+            connection = DriverManager.getConnection(JDBC_URL);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public void disconnect() {
+        try {
+            if (connection != null) {
+                connection.close();
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }
