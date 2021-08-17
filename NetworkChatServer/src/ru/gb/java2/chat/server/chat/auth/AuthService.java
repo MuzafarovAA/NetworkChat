@@ -22,6 +22,7 @@ public class AuthService {
                 return null;
             }
             username = resultSet.getString("username");
+            resultSet.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
