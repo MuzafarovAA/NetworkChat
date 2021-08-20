@@ -13,6 +13,7 @@ import java.util.TimerTask;
 
 public class ClientHandler {
 
+    public static final int LOGIN_DELAY = 120000;
     private final MyServer server;
     private final Socket clientSocket;
     private ObjectInputStream inputStream;
@@ -59,7 +60,7 @@ public class ClientHandler {
                 }
             }
         };
-        authTimer.schedule(authTimerTask, 100);
+        authTimer.schedule(authTimerTask, LOGIN_DELAY);
 
         while (true) {
             Command command = readCommand();

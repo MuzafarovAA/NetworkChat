@@ -18,12 +18,15 @@ public class MyServer {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server has been started");
             authService = new AuthService();
+            authService.connect();
             while (true) {
                 waitAndProcessNewClientConnection(serverSocket);
             }
         } catch (IOException e) {
             System.err.println("Failed to bind port " + port);
             e.printStackTrace();
+        } finally {
+            authService.disconnect();
         }
     }
 
