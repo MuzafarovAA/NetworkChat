@@ -9,6 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import ru.gb.java2.chat.client.ChatLog;
 import ru.gb.java2.chat.client.dialogs.Dialogs;
 import ru.gb.java2.chat.client.model.Network;
 import ru.gb.java2.chat.client.model.ReadCommandListener;
@@ -34,6 +35,7 @@ public class ChatController {
     private TextArea chatHistory;
     @FXML
     private TextArea messageTextArea;
+    private ChatLog chatLog;
 
 
     @FXML
@@ -62,15 +64,27 @@ public class ChatController {
     }
 
     private void appendMessageToChat(String sender, String message) {
-        chatHistory.appendText(DateFormat.getDateTimeInstance().format(new Date()));
+        String dateText = DateFormat.getDateTimeInstance().format(new Date());
+        chatHistory.appendText(dateText);
+        chatLog.printLogFile(dateText);
+
         chatHistory.appendText(System.lineSeparator());
+        chatLog.printLogFile(System.lineSeparator());
+
         if (sender != null) {
             chatHistory.appendText(sender + ":");
+            chatLog.printLogFile(sender + ":");
+
             chatHistory.appendText(System.lineSeparator());
+            chatLog.printLogFile(System.lineSeparator());
+
         }
         chatHistory.appendText(message);
+        chatLog.printLogFile(message);
         chatHistory.appendText(System.lineSeparator());
+        chatLog.printLogFile(System.lineSeparator());
         chatHistory.appendText(System.lineSeparator());
+        chatLog.printLogFile(System.lineSeparator());
         messageTextArea.clear();
     }
 
@@ -89,7 +103,10 @@ public class ChatController {
     public void initMessageHandler() {
         Network.getInstance().addReadMessageListener(new ReadCommandListener() {
             @Override
-            public void processReceivedCommand(Command command) {
+            public void processReceivedCommand(Command command) throws IOException {
+                chatLog = new ChatLog(Network.getInstance().getCurrentUsername());
+                chatLog.createLogFile();
+                chatLog.writeLogFile();
                 if (command.getType() == CommandType.CLIENT_MESSAGE) {
                     ClientMessageCommandData data = (ClientMessageCommandData) command.getData();
                     Platform.runLater(() -> ChatController.this.appendMessageToChat(data.getSender(), data.getMessage()));
