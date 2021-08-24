@@ -6,6 +6,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Network {
 
@@ -21,7 +23,8 @@ public class Network {
     private ObjectOutputStream socketOutput;
 
     private List<ReadCommandListener> listeners = new CopyOnWriteArrayList<>();
-    private Thread readMessageProcess;
+//    private Thread readMessageProcess;
+    private ExecutorService readMessageProcess;
     private boolean connected;
     private String currentUsername;
 
@@ -63,8 +66,9 @@ public class Network {
         return connected;
     }
 
-    private Thread startReadMessageProcess() {
-        Thread thread = new Thread(() -> {
+    private ExecutorService startReadMessageProcess() {
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.execute(() -> {
             while (true) {
                 try {
                     if (Thread.currentThread().isInterrupted()) {
@@ -84,9 +88,8 @@ public class Network {
                 }
             }
         });
-        thread.setDaemon(true);
-        thread.start();
-        return thread;
+        executorService.shutdown();
+        return executorService;
     }
 
     private Command readCommand() throws IOException {
@@ -134,7 +137,7 @@ public class Network {
     public void close() {
         try {
             connected = false;
-            readMessageProcess.interrupt();
+            readMessageProcess.shutdownNow();
             socket.close();
         } catch (IOException e) {
             e.printStackTrace();
