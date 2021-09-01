@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class AuthService {
 
-    public static final String JDBC_URL = "jdbc:sqlite:C:/Users/artmuz/Desktop/GeekBrains/Java2NetworkChat/userlist.db";
+    public static final String JDBC_URL = "jdbc:sqlite:userlist.db";
     private Connection connection;
 
 

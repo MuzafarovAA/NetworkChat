@@ -23,6 +23,7 @@ public class Network {
     private List<ReadCommandListener> listeners = new CopyOnWriteArrayList<>();
     private Thread readMessageProcess;
     private boolean connected;
+    private String currentUsername;
 
 
     public static Network getInstance() {
@@ -139,4 +140,13 @@ public class Network {
             e.printStackTrace();
         }
     }
+
+    public void setCurrentUsername(String currentUsername) {
+        this.currentUsername = currentUsername;
+    }
+
+    public String getCurrentUsername() {
+        return currentUsername;
+    }
+
 }
