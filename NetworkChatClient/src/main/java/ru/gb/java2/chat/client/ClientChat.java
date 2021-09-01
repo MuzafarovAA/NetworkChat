@@ -39,6 +39,9 @@ public class ClientChat extends Application {
         getChatStage().show();
         getAuthStage().show();
         getAuthController().initMessageHandler();
+        primaryStage.setOnCloseRequest(windowEvent -> {
+            System.exit(0);
+        });
     }
 
     public Stage getPrimaryStage() {

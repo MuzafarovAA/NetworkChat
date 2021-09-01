@@ -10,6 +10,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ClientHandler {
 
@@ -28,8 +30,9 @@ public class ClientHandler {
     public void handle() throws IOException {
         inputStream = new ObjectInputStream(clientSocket.getInputStream());
         outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+        ExecutorService executorService = Executors.newCachedThreadPool();
 
-        new Thread(() -> {
+        executorService.execute(() -> {
             try {
                 authentication();
                 readMessages();
@@ -42,7 +45,8 @@ public class ClientHandler {
                     System.err.println("Failed to close connection");
                 }
             }
-        }).start();
+        });
+        executorService.shutdown();
     }
 
     private void authentication() throws IOException {
